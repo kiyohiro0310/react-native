@@ -1,63 +1,56 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+} from "react-native";
+import GoalInput from "./components/GoalInput";
+
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
+  const [courseGoals, setCourseGoals] = useState([]);
+
+  function addGoalHandler(enteredGoalText) {
+    setCourseGoals((currentCourseGoals) => [
+      ...currentCourseGoals,
+      {text: enteredGoalText, id: Math.random().toString()}
+    ]);
+  }
+
+  function deleteGoalHandler(id) {
+    setCourseGoals(currentCourseGoals => {
+      return currentCourseGoals.filter((goal) => goal.id !== id );
+    });
+  }
+
   return (
-    <View style={{ padding: 50, flexDirection: "row", width: "80%", height: 300, justifyContent: 'space-between', alignItems: 'stretch' }}>
-      <View
-        style={{
-          backgroundColor: "red",
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>1</Text>
+    <View style={styles.appContainer}>
+      <GoalInput onAdd={addGoalHandler} />
+
+      <View style={styles.goalsContainer}>
+        <FlatList
+          data={courseGoals}
+          renderItem={(itemData) => {
+            return <GoalItem text={itemData.item.text} onDelete={deleteGoalHandler} id={itemData.item.id}/>;
+          }}
+          keyExtractor={(item, index) => {
+            return item.id;
+          }}
+          alwaysBounceVertical={false}
+        />
       </View>
-      <View
-        style={{
-          backgroundColor: "blue",
-          flex: 2,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>2</Text>
-      </View>
-      <View
-        style={{
-          backgroundColor: "yellow",
-          flex: 3,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>3</Text>
-      </View>
-      {/* <View style={styles.inputContainer}>
-        <TextInput style={styles.textInput} placeholder="Your course goal!" />
-        <Button title="Add Goal"/>
-      </View>
-      <View>
-        <Text>List of goals...</Text>
-      </View> */}
     </View>
   );
 }
 
-// const styles = StyleSheet.create({
-//   appContainer: {
-//     padding: 50
-//   },
-//   inputContainer: {
-//     flexDirection: "row",
-//     justifyContent: "space-between"
-//   },
-//   textInput: {
-//     borderWidth: 1,
-//     borderColor: '#cccccc',
-//     width: '80%',
-//     marginRight: 8,
-//     padding: 8
-//   }
-// });
+const styles = StyleSheet.create({
+  appContainer: {
+    flex: 1,
+    padding: 50,
+    paddingHorizontal: 16,
+  },
+  goalsContainer: {
+    flex: 5,
+  }
+});
